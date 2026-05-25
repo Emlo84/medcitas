@@ -1,0 +1,86 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Design Tokens ──────────────────────────────────────────────────────── */
+:root {
+  /* Brand Colors */
+  --color-primary:    #0066CC;
+  --color-secondary:  #00A896;
+  --color-purple:     #7B2CBF;
+  --color-danger:     #FF6B6B;
+
+  /* Specialty accent colors (tinted backgrounds) */
+  --color-specialty-medicina:    rgba(0, 102, 204, 0.08);
+  --color-specialty-odontologia: rgba(0, 168, 150, 0.08);
+  --color-specialty-psicologia:  rgba(123, 44, 191, 0.08);
+  --color-specialty-dermatologia: rgba(255, 107, 107, 0.08);
+
+  /* Neutrals */
+  --color-text-primary:   #0A0A0A;
+  --color-text-secondary: #6B7280;
+  --color-border:         rgba(0, 0, 0, 0.10);
+  --color-surface:        #FFFFFF;
+  --color-background:     #F9FAFB;
+
+  /* Spacing scale */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 40px;
+  --space-2xl: 64px;
+
+  /* Typography */
+  --font-sans: "Inter", sans-serif;
+  --text-sm:   14px;
+  --text-base: 16px;
+  --text-lg:   18px;
+  --text-xl:   20px;
+  --text-2xl:  24px;
+  --text-3xl:  30px;
+  --text-4xl:  36px;
+}
+
+/* ─── Base Reset ──────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--color-text-primary);
+  background-color: var(--color-background);
+  line-height: 1.5;
+}
+
+/* ─── Accessibility ───────────────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Skip-link for keyboard users */
+.skip-link {
+  position: absolute;
+  top: -999px;
+  left: 0;
+  z-index: 9999;
+  padding: 8px 16px;
+  background: var(--color-primary);
+  color: #fff;
+  font-weight: 600;
+  border-radius: 0 0 4px 4px;
+}
+
+.skip-link:focus {
+  top: 0;
+}
