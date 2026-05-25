@@ -18,6 +18,18 @@ export interface SpecialtyInfo {
   iconColor: string;        // hex — used for SVG strokes
 }
 
+export interface DoctorExperience {
+  role: string;
+  organization: string;
+  period: string;           // "2018 - Presente" o "2011 - 2018"
+}
+
+export interface DoctorEducation {
+  title: string;
+  institution: string;
+  period: string;           // "2008 - 2011"
+}
+
 export interface Doctor {
   id: string;
   name: string;
@@ -25,12 +37,17 @@ export interface Doctor {
   rating: number;           // 0-5
   reviewCount: number;
   yearsExperience: number;
+  recommendationRate?: number;  // 0-100, e.g. 98
   consultationFee: number;  // COP
   avatarUrl: string;
   hospital: string;
+  hospitalAddress?: string;
   city: string;
   availableToday: boolean;
   bio: string;
+  experience?: DoctorExperience[];
+  education?: DoctorEducation[];
+  services?: string[];
 }
 
 export interface TimeSlot {
@@ -44,13 +61,22 @@ export interface AppointmentDay {
   slots: TimeSlot[];
 }
 
+export type ConsultationType = "presencial" | "virtual";
+
+export type AppointmentStatus =
+  | "pending"
+  | "confirmed"
+  | "cancelled"
+  | "completed";
+
 export interface Appointment {
   id: string;
   doctorId: string;
   patientId: string;
   date: string;             // ISO 8601
   time: string;             // "HH:MM"
-  status: "pending" | "confirmed" | "cancelled" | "completed";
+  status: AppointmentStatus;
+  consultationType?: ConsultationType;
   reason?: string;
   confirmationCode: string;
 }

@@ -7,8 +7,8 @@ import { cn } from "@/utils/cn";
 
 const NAV_LINKS = [
   { href: "/search", label: "Buscar médicos" },
+  { href: "/mis-citas", label: "Mis citas" },
   { href: "#especialidades", label: "Especialidades" },
-  { href: "#como-funciona", label: "¿Cómo funciona?" },
 ];
 
 export function Navbar() {

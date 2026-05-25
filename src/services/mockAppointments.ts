@@ -1,17 +1,78 @@
-import type { Appointment, ApiResponse } from "@/types";
+import type { Appointment, ApiResponse, ConsultationType, Doctor } from "@/types";
+import { getDoctorById } from "@/services/mockDoctors";
 
 // ─── Mock store (in-memory for now) ──────────────────────────────────────
+
+const FUTURE_DATE_1 = futureDate(5);
+const FUTURE_DATE_2 = futureDate(11);
+const FUTURE_DATE_3 = futureDate(20);
+const PAST_DATE_1 = pastDate(7);
+const PAST_DATE_2 = pastDate(28);
+const PAST_DATE_3 = pastDate(60);
 
 let MOCK_APPOINTMENTS: Appointment[] = [
   {
     id: "apt-001",
+    doctorId: "doc-005",
+    patientId: "user-001",
+    date: FUTURE_DATE_1,
+    time: "09:00",
+    status: "confirmed",
+    consultationType: "presencial",
+    reason: "Control general",
+    confirmationCode: "MC-2026-0520-001",
+  },
+  {
+    id: "apt-002",
+    doctorId: "doc-004",
+    patientId: "user-001",
+    date: FUTURE_DATE_2,
+    time: "14:30",
+    status: "confirmed",
+    consultationType: "virtual",
+    reason: "Revisión de manchas",
+    confirmationCode: "MC-2026-0525-002",
+  },
+  {
+    id: "apt-003",
     doctorId: "doc-001",
     patientId: "user-001",
-    date: "2026-06-01",
+    date: FUTURE_DATE_3,
     time: "10:00",
-    status: "confirmed",
-    reason: "Control general",
-    confirmationCode: "MED-2026-001",
+    status: "pending",
+    consultationType: "presencial",
+    reason: "Chequeo preventivo",
+    confirmationCode: "MC-2026-0602-003",
+  },
+  {
+    id: "apt-101",
+    doctorId: "doc-002",
+    patientId: "user-001",
+    date: PAST_DATE_1,
+    time: "11:00",
+    status: "completed",
+    consultationType: "presencial",
+    confirmationCode: "MC-2026-0517-099",
+  },
+  {
+    id: "apt-102",
+    doctorId: "doc-003",
+    patientId: "user-001",
+    date: PAST_DATE_2,
+    time: "16:30",
+    status: "completed",
+    consultationType: "virtual",
+    confirmationCode: "MC-2026-0426-088",
+  },
+  {
+    id: "apt-103",
+    doctorId: "doc-005",
+    patientId: "user-001",
+    date: PAST_DATE_3,
+    time: "09:30",
+    status: "cancelled",
+    consultationType: "presencial",
+    confirmationCode: "MC-2026-0325-077",
   },
 ];
 
@@ -27,6 +88,7 @@ export async function createAppointment(payload: {
   date: string;
   time: string;
   reason?: string;
+  consultationType?: ConsultationType;
 }): Promise<ApiResponse<Appointment>> {
   await delay(600);
 
@@ -83,10 +145,62 @@ function delay(ms: number): Promise<void> {
 }
 
 function generateConfirmationCode(): string {
-  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-  let code = "MED-";
-  for (let i = 0; i < 6; i++) {
-    code += chars[Math.floor(Math.random() * chars.length)];
-  }
-  return code;
+  const year = new Date().getFullYear();
+  const datePart = new Date()
+    .toISOString()
+    .slice(5, 10)
+    .replace("-", "");
+  const seq = String(Math.floor(100 + Math.random() * 900));
+  return `MC-${year}-${datePart}-${seq}`;
+}
+
+function futureDate(daysFromNow: number): string {
+  const d = new Date();
+  d.setDate(d.getDate() + daysFromNow);
+  return d.toISOString().slice(0, 10);
+}
+
+function pastDate(daysAgo: number): string {
+  const d = new Date();
+  d.setDate(d.getDate() - daysAgo);
+  return d.toISOString().slice(0, 10);
+}
+
+// ─── Enriched query ───────────────────────────────────────────────────────
+
+export interface AppointmentWithDoctor extends Appointment {
+  doctor: Doctor | null;
+}
+
+/**
+ * Returns the patient appointments split into upcoming/past, each item enriched
+ * with its doctor data. Used by the "Mis citas" screen.
+ */
+export async function getMyAppointments(
+  patientId: string = "user-001"
+): Promise<{
+  upcoming: AppointmentWithDoctor[];
+  past: AppointmentWithDoctor[];
+}> {
+  await delay(300);
+  const today = new Date().toISOString().slice(0, 10);
+
+  const mine = MOCK_APPOINTMENTS.filter((a) => a.patientId === patientId);
+
+  const enrich = async (apt: Appointment): Promise<AppointmentWithDoctor> => ({
+    ...apt,
+    doctor: await getDoctorById(apt.doctorId),
+  });
+
+  const enriched = await Promise.all(mine.map(enrich));
+
+  const upcoming = enriched
+    .filter((a) => a.date >= today && a.status !== "cancelled" && a.status !== "completed")
+    .sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
+
+  const past = enriched
+    .filter((a) => a.date < today || a.status === "cancelled" || a.status === "completed")
+    .sort((a, b) => (b.date + b.time).localeCompare(a.date + a.time));
+
+  return { upcoming, past };
 }

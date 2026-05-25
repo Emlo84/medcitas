@@ -1,8 +1,8 @@
-import Image from "next/image";
 import Link from "next/link";
 import type { Doctor } from "@/types";
 import { StarRating } from "@/components/ui/StarRating";
 import { Button } from "@/components/ui/Button";
+import { Avatar } from "@/components/ui/Avatar";
 import { formatCOP } from "@/utils/cn";
 import { SPECIALTY_LABELS } from "@/lib/specialties";
 import { cn } from "@/utils/cn";
@@ -34,17 +34,7 @@ export function DoctorCard({
       aria-label={`Dr. ${doctor.name}, ${specialtyLabel}`}
     >
       {/* Avatar */}
-      <div className="flex-shrink-0">
-        <div className="w-16 h-16 rounded-full bg-neutral-100 overflow-hidden relative">
-          <Image
-            src={doctor.avatarUrl}
-            alt={`Foto de ${doctor.name}`}
-            fill
-            className="object-cover"
-            sizes="64px"
-          />
-        </div>
-      </div>
+      <Avatar name={doctor.name} size="md" className="rounded-xl" />
 
       {/* Info */}
       <div className="flex-1 min-w-0">
