@@ -5,7 +5,7 @@ import type { Doctor, Specialty, SearchDoctorsParams, PaginatedResponse } from "
 const MOCK_DOCTORS: Doctor[] = [
   {
     id: "doc-001",
-    name: "Dra. Valentina Ríos",
+    name: "Dra. Ivanna Valentina Acosta",
     specialty: "medicina-general",
     rating: 4.9,
     reviewCount: 312,
