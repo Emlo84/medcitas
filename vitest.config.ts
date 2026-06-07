@@ -12,11 +12,15 @@ export default defineConfig({
   test: {
     environment: "jsdom",
     globals: true,
-    tsconfig: "tsconfig.vitest.json",
+    typecheck: {
+      tsconfig: "tsconfig.vitest.json",
+    },
     setupFiles: "src/tests/setupTests.ts",
     include: ["src/tests/**/*.{test,spec}.{ts,tsx}"],
-    deps: {
-      inline: ["@testing-library/react"],
+    server: {
+      deps: {
+        inline: ["@testing-library/react"],
+      },
     },
   },
 });
